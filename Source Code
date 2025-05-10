@@ -1,0 +1,117 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+
+const int buttonPins[10] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+const int setupButton = 2;  
+
+String password = "1234";       
+String enteredPassword = "";   
+String newPassword = "";       
+bool isLocked = true;          
+bool setupMode = false;        
+const int redPin = 12;
+const int greenPin = 13;
+
+void setup() {
+  lcd.init();
+  lcd.backlight();
+  lcd.print("Enter Password:");
+
+  
+  for (int i = 0; i < 10; i++) {
+    pinMode(buttonPins[i], INPUT_PULLUP);
+  }
+}
+
+void loop() {
+  if (digitalRead(setupButton) == LOW) {  // Enter setup mode
+    delay(200);
+    lcd.clear();
+    
+    
+    lcd.print("Enter New Pwd:");
+    setupMode = true;
+    newPassword = "";  
+  }
+
+  if (setupMode) {
+    setPassword();
+  } else {
+    checkPasswordInput();
+  }
+}
+
+void checkPasswordInput() {
+
+  for (int i = 0; i < 10; i++) {
+    if (digitalRead(buttonPins[i]) == LOW) {
+      delay(200);  // Debounce
+      enteredPassword += String(i);  
+      lcd.setCursor(0, 1);
+      lcd.print(enteredPassword);
+
+      
+      if (enteredPassword.length() == password.length()) {
+        delay(500);
+        checkPassword();
+      }
+    }
+  }
+}
+
+void checkPassword() {
+  lcd.clear();
+  if (enteredPassword == password) {
+    isLocked = false;
+    lcd.print("Access Granted");
+    digitalWrite(redPin, LOW);
+    digitalWrite(greenPin, HIGH);
+    delay(1000);
+    digitalWrite(greenPin, LOW);
+
+  } else {
+    lcd.print("Access Denied");
+    digitalWrite(redPin, HIGH);
+    delay(1000);
+    digitalWrite(redPin, LOW);
+    digitalWrite(greenPin, LOW);
+
+  }
+
+  delay(2000);
+  lcd.clear();
+  lcd.print("Enter Password:");
+  enteredPassword = "";  
+}
+
+void setPassword() {
+  for (int i = 0; i < 10; i++) {
+    if (digitalRead(buttonPins[i]) == LOW) {
+      delay(200);  // Debounce
+      newPassword += String(i);  
+      lcd.setCursor(0, 1);
+      lcd.print(newPassword);
+
+      if (newPassword.length() >= 4) {  
+        password = newPassword;
+        setupMode = false;
+        lcd.clear();
+        lcd.print("Pwd Updated!");
+        delay(2000);
+        lcd.clear();
+        lcd.print("Enter Password:");
+        break;
+      }
+    }
+  }
+}
+
+
+
+   
+
+
