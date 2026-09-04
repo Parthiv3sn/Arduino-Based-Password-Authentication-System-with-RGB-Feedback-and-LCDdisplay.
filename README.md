@@ -46,7 +46,3 @@ Buttons use `INPUT_PULLUP`; wire each button between its pin and GND.
 
 - `Source Code` — Arduino sketch
 - `Circuit.png` — wiring reference
-
-## License
-
-No license has been specified. Add one before reusing or distributing this work.
