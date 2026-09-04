@@ -1,4 +1,4 @@
-# Arduino-Based-Password-Authentication-System-with-RGB-Feedback-and-LCDdisplay.
+# Arduino Password Authentication System
 
 An Arduino keypad-style password demonstration using ten buttons, a 16×2 I²C LCD, and red/green status LEDs.
 
