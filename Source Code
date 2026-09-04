@@ -1,18 +1,16 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
-
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
-
 const int buttonPins[10] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-const int setupButton = 2;  
+const int setupButton = 2;
 
-String password = "1234";       
-String enteredPassword = "";   
-String newPassword = "";       
-bool isLocked = true;          
-bool setupMode = false;        
+String password = "1234";
+String enteredPassword = "";
+String newPassword = "";
+bool isLocked = true;
+bool setupMode = false;
 const int redPin = 12;
 const int greenPin = 13;
 
@@ -21,21 +19,23 @@ void setup() {
   lcd.backlight();
   lcd.print("Enter Password:");
 
-  
   for (int i = 0; i < 10; i++) {
     pinMode(buttonPins[i], INPUT_PULLUP);
   }
+
+  pinMode(redPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  digitalWrite(redPin, LOW);
+  digitalWrite(greenPin, LOW);
 }
 
 void loop() {
-  if (digitalRead(setupButton) == LOW) {  // Enter setup mode
+  if (digitalRead(setupButton) == LOW) {
     delay(200);
     lcd.clear();
-    
-    
     lcd.print("Enter New Pwd:");
     setupMode = true;
-    newPassword = "";  
+    newPassword = "";
   }
 
   if (setupMode) {
@@ -46,15 +46,13 @@ void loop() {
 }
 
 void checkPasswordInput() {
-
   for (int i = 0; i < 10; i++) {
     if (digitalRead(buttonPins[i]) == LOW) {
-      delay(200);  // Debounce
-      enteredPassword += String(i);  
+      delay(200);
+      enteredPassword += String(i);
       lcd.setCursor(0, 1);
       lcd.print(enteredPassword);
 
-      
       if (enteredPassword.length() == password.length()) {
         delay(500);
         checkPassword();
@@ -65,6 +63,7 @@ void checkPasswordInput() {
 
 void checkPassword() {
   lcd.clear();
+
   if (enteredPassword == password) {
     isLocked = false;
     lcd.print("Access Granted");
@@ -72,31 +71,29 @@ void checkPassword() {
     digitalWrite(greenPin, HIGH);
     delay(1000);
     digitalWrite(greenPin, LOW);
-
   } else {
     lcd.print("Access Denied");
     digitalWrite(redPin, HIGH);
     delay(1000);
     digitalWrite(redPin, LOW);
     digitalWrite(greenPin, LOW);
-
   }
 
   delay(2000);
   lcd.clear();
   lcd.print("Enter Password:");
-  enteredPassword = "";  
+  enteredPassword = "";
 }
 
 void setPassword() {
   for (int i = 0; i < 10; i++) {
     if (digitalRead(buttonPins[i]) == LOW) {
-      delay(200);  // Debounce
-      newPassword += String(i);  
+      delay(200);
+      newPassword += String(i);
       lcd.setCursor(0, 1);
       lcd.print(newPassword);
 
-      if (newPassword.length() >= 4) {  
+      if (newPassword.length() >= 4) {
         password = newPassword;
         setupMode = false;
         lcd.clear();
@@ -109,9 +106,3 @@ void setPassword() {
     }
   }
 }
-
-
-
-   
-
-
